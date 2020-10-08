@@ -39,6 +39,9 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libonig-dev \
+    libpcre3-dev \
+    unixodbc-dev \
+    make \
     graphviz
 
 # Clear cache
@@ -46,13 +49,21 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
 RUN docker-php-ext-install opcache
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl curl bcmath gmp
+RUN docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl curl bcmath gmp
 RUN docker-php-ext-install gd
 
 RUN apt-get update && \
     pecl channel-update pecl.php.net && \
     pecl install redis && \
-    docker-php-ext-enable redis && \
+    docker-php-ext-enable redis
+
+RUN pecl channel-update pecl.php.net && \
+    pecl install sqlsrv && \
+    docker-php-ext-enable sqlsrv
+
+RUN pecl channel-update pecl.php.net && \
+    pecl install pdo_sqlsrv && \
+    docker-php-ext-enable pdo_sqlsrv && \
     docker-php-source delete
 
 RUN apt-get install -y libmagickwand-dev
